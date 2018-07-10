@@ -8,7 +8,7 @@ ${PYTHON} -c 'from callbench import have_ccall; print(f"PEP 580: {have_ccall(len
 
 timeit()
 {
-    ${PYTHON} -m perf timeit --quiet -s 'from callbench import call, fastcall, obj, meth, fastmeth, umeth, ufastmeth' "$@"
+    ${PYTHON} -m perf timeit --quiet --duplicate 200 -s 'from callbench import call, fastcall, obj, meth, fastmeth, umeth, ufastmeth' "$@"
 }
 
 
