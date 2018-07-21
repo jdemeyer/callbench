@@ -3,7 +3,7 @@
 
 PyObject *have_ccall(PyObject *self, PyObject *obj)
 {
-    return PyBool_FromLong(Py_TYPE(obj)->tp_flags & 2);
+    return PyBool_FromLong(Py_TYPE(obj)->tp_flags & 2048);
 }
 
 
@@ -21,21 +21,25 @@ PyObject *dummy_fastcall(PyObject *self, PyObject *const *args, Py_ssize_t nargs
 
 static PyMethodDef Callable_methods[] = {
     {"meth", (PyCFunction)dummy_call, METH_VARARGS | METH_KEYWORDS},
+#ifdef METH_FASTCALL
     {"fastmeth", (PyCFunction)dummy_fastcall, METH_FASTCALL | METH_KEYWORDS},
+#endif
     {NULL}
 };
 
 
 static PyMethodDef module_methods[] = {
     {"call", (PyCFunction)dummy_call, METH_VARARGS | METH_KEYWORDS},
+#ifdef METH_FASTCALL
     {"fastcall", (PyCFunction)dummy_fastcall, METH_FASTCALL | METH_KEYWORDS},
+#endif
     {"have_ccall", (PyCFunction)have_ccall, METH_O},
     {NULL}
 };
 
 
 static PyTypeObject CallableType = {
-    PyVarObject_HEAD_INIT(NULL, 0)
+    PyVarObject_HEAD_INIT(0, 0)
     "Callable",
     sizeof(PyObject),                   /* tp_basicsize */
     0,                                  /* tp_itemsize */
@@ -54,7 +58,7 @@ static PyTypeObject CallableType = {
     0,                                  /* tp_getattro */
     0,                                  /* tp_setattro */
     0,                                  /* tp_as_buffer */
-    0,                                  /* tp_flags */
+    Py_TPFLAGS_DEFAULT,                 /* tp_flags */
     0,                                  /* tp_doc */
     0,                                  /* tp_traverse */
     0,                                  /* tp_clear */
@@ -76,6 +80,31 @@ static PyTypeObject CallableType = {
 };
 
 
+static PyObject *
+initmodule(PyObject *m)
+{
+    if (PyType_Ready(&CallableType) < 0) {
+        return NULL;
+    }
+    Py_INCREF(&CallableType);
+    PyModule_AddObject(m, "Callable", (PyObject *)&CallableType);
+
+    return m;
+}
+
+
+#if PY_MAJOR_VERSION < 3
+PyMODINIT_FUNC
+initcallables(void)
+{
+    PyObject *m = Py_InitModule("callables", module_methods);
+    if (m == NULL) {
+        return;
+    }
+    Py_INCREF(m);
+    initmodule(m);
+}
+#else
 static struct PyModuleDef callables_module = {
     PyModuleDef_HEAD_INIT,
     "callables",
@@ -83,7 +112,6 @@ static struct PyModuleDef callables_module = {
     -1,
     module_methods,
 };
-
 
 PyMODINIT_FUNC
 PyInit_callables(void)
@@ -93,11 +121,6 @@ PyInit_callables(void)
         return NULL;
     }
 
-    if (PyType_Ready(&CallableType) < 0) {
-        return NULL;
-    }
-    Py_INCREF(&CallableType);
-    PyModule_AddObject(m, "Callable", (PyObject *)&CallableType);
-
-    return m;
+    return initmodule(m);
 }
+#endif

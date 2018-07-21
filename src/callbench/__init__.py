@@ -3,7 +3,10 @@ from callbench.callables import *
 obj = Callable()
 
 meth = obj.meth
-fastmeth = obj.fastmeth
-
 umeth = Callable.meth
-ufastmeth = Callable.fastmeth
+
+try:
+    fastmeth = obj.fastmeth
+    ufastmeth = Callable.fastmeth
+except AttributeError:
+    pass
