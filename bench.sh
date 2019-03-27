@@ -8,7 +8,7 @@ ${PYTHON} -c 'from callbench import have_ccall; print(f"PEP 580: {have_ccall(len
 
 timeit()
 {
-    ${PYTHON} -m perf timeit --quiet --duplicate 200 -s 'from callbench import call, fastcall, obj, meth, fastmeth, umeth, ufastmeth' "$@"
+    ${PYTHON} -m perf timeit --quiet --duplicate 200 -s 'from callbench import call, fastcall, Callable, obj, meth, fastmeth, umeth, ufastmeth' "$@"
 }
 
 
@@ -32,6 +32,12 @@ for args in "" "1, 2, 3" "1, two=2"; do
 
     echo -n "FASTCALL bound method($args):        "
     timeit "fastmeth($args)"
+
+    echo -n "VARARGS cls.method(obj, $args):      "
+    timeit "Callable.meth(obj, $args)"
+
+    echo -n "FASTCALL cls.method(obj, $args):     "
+    timeit "Callable.fastmeth(obj, $args)"
 
     echo -n "VARARGS unbound method(obj, $args):  "
     timeit "umeth(obj, $args)"
