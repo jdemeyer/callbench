@@ -15,6 +15,10 @@ timeit()
 for args in "" "1, 2, 3" "1, two=2"; do
     echo
 
+    # Warm up
+    timeit "obj($args)" >/dev/null
+
+    # Actual benchmarks
     echo -n "VARARGS function($args):             "
     timeit "call($args)"
 
