@@ -3,7 +3,8 @@
 PYTHON=python3
 
 ${PYTHON} -c 'from sys import version; print(version)'
-${PYTHON} -c 'from callbench import have_ccall; print(f"PEP 580: {have_ccall(len)}")'
+${PYTHON} -c 'from callbench import have_PEP_580; print(f"PEP 580: {have_PEP_580(len)}")'
+${PYTHON} -c 'from callbench import have_PEP_590; print(f"PEP 590: {have_PEP_590(len)}")'
 
 
 timeit()

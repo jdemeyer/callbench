@@ -1,12 +1,6 @@
 #include "Python.h"
 
 
-PyObject *have_ccall(PyObject *self, PyObject *obj)
-{
-    return PyBool_FromLong(Py_TYPE(obj)->tp_flags & 2048);
-}
-
-
 PyObject *dummy_call(PyObject *self, PyObject *args, PyObject *kwds)
 {
     Py_RETURN_NONE;
@@ -33,7 +27,6 @@ static PyMethodDef module_methods[] = {
 #ifdef METH_FASTCALL
     {"fastcall", (PyCFunction)dummy_fastcall, METH_FASTCALL | METH_KEYWORDS},
 #endif
-    {"have_ccall", (PyCFunction)have_ccall, METH_O},
     {NULL}
 };
 
